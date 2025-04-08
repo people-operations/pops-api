@@ -26,7 +26,7 @@ public class LambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent
             String body = event.getBody();
             JsonNode json = objectMapper.readTree(body);
 
-            System.out.println("Body recebido: " + body);
+            logger.info("Body recebido: {}", body);
 
             StringBuilder csv = new StringBuilder();
             String header = "Nome do Colaborador,Departamento/Time,E-mail de Contato,Tipo de Certificado,Nome do Certificado,Instituição Emissora,Área do Conhecimento,Data de Conclusão,Data de Vencimento,Carga Horária,ID do Certificado,Modalidade do Curso,Certificado obrigatório para função?,Categoria do conhecimento obtido\n";
