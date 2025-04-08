@@ -56,15 +56,11 @@ public class LambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent
             ByteArrayInputStream inputStream = new ByteArrayInputStream(csv.toString().getBytes(StandardCharsets.UTF_8));
             s3.putObject(BUCKET_NAME, FILE_NAME, inputStream, null);
 
-            return new APIGatewayProxyResponseEvent()
-                    .withStatusCode(200)
-                    .withBody("{\"message\": \"CSV gerado e enviado com sucesso!\"}");
+            return new APIGatewayProxyResponseEvent().withStatusCode(200).withBody("{\"message\": \"CSV gerado e enviado com sucesso!\"}");
 
         } catch (Exception e) {
             logger.error("Error processing the CSV", e);
-            return new APIGatewayProxyResponseEvent()
-                    .withStatusCode(500)
-                    .withBody("{\"message\": \"Erro ao processar o CSV: " + e.getMessage() + "\"}");
+            return new APIGatewayProxyResponseEvent().withStatusCode(500).withBody("{\"message\": \"Erro ao processar o CSV: " + e.getMessage() + "\"}");
         }
     }
 
