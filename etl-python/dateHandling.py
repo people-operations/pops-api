@@ -19,7 +19,7 @@ s3_client = boto3.client('s3')
 sns_client = boto3.client('sns')
 
 TOPIC_ARN = 'arn:aws:sns:us-east-1:848479655698:expiration-waning'
-SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:848479655698:email-sender'
+SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:848479655698:etl-report'
 
 def lambda_handler(event, context):
     # Configuração do S3
