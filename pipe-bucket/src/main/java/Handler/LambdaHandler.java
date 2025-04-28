@@ -16,7 +16,7 @@ public class LambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent
 
     private final AmazonS3 s3 = AmazonS3ClientBuilder.defaultClient();
     private final String BUCKET_NAME = "bucket-pops-raw-certificacoes";
-    private final String FILE_NAME = "certificacoes.csv";
+    private final String FILE_NAME = "colaboradores_certificados_pv.csv";
     private final ObjectMapper objectMapper = new ObjectMapper();
     private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(LambdaHandler.class);
 
@@ -29,7 +29,7 @@ public class LambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent
             logger.info("Body recebido: {}", body);
 
             StringBuilder csv = new StringBuilder();
-            String header = "Nome do Colaborador,Departamento/Time,E-mail de Contato,Tipo de Certificado,Nome do Certificado,Instituição Emissora,Área do Conhecimento,Data de Conclusão,Data de Vencimento,Carga Horária,ID do Certificado,Modalidade do Curso,Certificado obrigatório para função?,Categoria do conhecimento obtido\n";
+            String header = "Nome completo do colaborador,Departamento/time,E-mail,ID do certificado,Tipo do certificado,Nome do certificado,Instituição emissora,Área de conhecimento,Data de conclusão,Data de vencimento (se aplicável),Carga horária (se aplicável),Modalidade do curso,Obrigatoriedade de certificado,Categoria do conhecimento obtido,Upload do certificado (arquivo),Observações (opcional)\n\n";
 
             try {
                 String existingFileContent = s3.getObjectAsString(BUCKET_NAME, FILE_NAME);
@@ -41,6 +41,7 @@ public class LambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent
             csv.append(safe(json, "nomeColaborador")).append(",");
             csv.append(safe(json, "departamentoTime")).append(",");
             csv.append(safe(json, "emailContato")).append(",");
+            csv.append(safe(json, "idCertificado")).append(",");
             csv.append(safe(json, "tipoCertificado")).append(",");
             csv.append(safe(json, "nomeCertificado")).append(",");
             csv.append(safe(json, "instituicaoEmissora")).append(",");
@@ -48,10 +49,11 @@ public class LambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent
             csv.append(safe(json, "dataConclusao")).append(",");
             csv.append(safe(json, "dataVencimento")).append(",");
             csv.append(safe(json, "cargaHoraria")).append(",");
-            csv.append(safe(json, "idCertificado")).append(",");
             csv.append(safe(json, "modalidadeCurso")).append(",");
             csv.append(safe(json, "certificadoObrigatorio")).append(",");
-            csv.append(safe(json, "categoriaConhecimento")).append("\n");
+            csv.append(safe(json, "categoriaConhecimento")).append(",");
+            csv.append(safe(json, "certificado")).append(",");
+            csv.append(safe(json, "observacao")).append("\n");
 
             ByteArrayInputStream inputStream = new ByteArrayInputStream(csv.toString().getBytes(StandardCharsets.UTF_8));
             s3.putObject(BUCKET_NAME, FILE_NAME, inputStream, null);
