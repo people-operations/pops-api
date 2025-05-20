@@ -15,7 +15,7 @@ import java.nio.charset.StandardCharsets;
 public class LambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
     private final AmazonS3 s3 = AmazonS3ClientBuilder.defaultClient();
-    private final String BUCKET_NAME = "bucket-pops-raw-certificacoes";
+    private final String BUCKET_NAME = "bucket-pops-raw-certificacoes-sprint";
     private final String FILE_NAME = "colaboradores_certificados_pv.csv";
     private final ObjectMapper objectMapper = new ObjectMapper();
     private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(LambdaHandler.class);
@@ -28,36 +28,46 @@ public class LambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent
 
             logger.info("Body recebido: {}", body);
 
+            // Variáveis para armazenar o conteúdo do CSV
             StringBuilder csv = new StringBuilder();
-            String header = "Nome completo do colaborador,Departamento/time,E-mail,ID do certificado,Tipo do certificado,Nome do certificado,Instituição emissora,Área de conhecimento,Data de conclusão,Data de vencimento (se aplicável),Carga horária (se aplicável),Modalidade do curso,Obrigatoriedade de certificado,Categoria do conhecimento obtido,Upload do certificado (arquivo),Observações (opcional)\n\n";
 
+            // Cabeçalho atualizado para usar ponto e vírgula como delimitador
+            String header = "Nome completo do colaborador;Departamento/time;E-mail;ID do certificado;Tipo do certificado;Nome do certificado;Instituição emissora;Área de conhecimento;Data de conclusão;Data de vencimento (se aplicável);Carga horária (se aplicável);Modalidade do curso;Obrigatoriedade de certificado;Categoria do conhecimento obtido;Upload do certificado (arquivo);Observações (opcional)\n";
+
+            // Lê o conteúdo do arquivo CSV existente, se houver
             try {
                 String existingFileContent = s3.getObjectAsString(BUCKET_NAME, FILE_NAME);
-                csv.append(existingFileContent);
+                csv.append(existingFileContent); // Adiciona o conteúdo existente ao novo CSV
             } catch (Exception e) {
+                // Se o arquivo não existir, apenas insere o cabeçalho
                 csv.append(header);
             }
 
-            csv.append(safe(json, "nomeColaborador")).append(",");
-            csv.append(safe(json, "departamentoTime")).append(",");
-            csv.append(safe(json, "emailContato")).append(",");
-            csv.append(safe(json, "idCertificado")).append(",");
-            csv.append(safe(json, "tipoCertificado")).append(",");
-            csv.append(safe(json, "nomeCertificado")).append(",");
-            csv.append(safe(json, "instituicaoEmissora")).append(",");
-            csv.append(safe(json, "areaConhecimento")).append(",");
-            csv.append(safe(json, "dataConclusao")).append(",");
-            csv.append(safe(json, "dataVencimento")).append(",");
-            csv.append(safe(json, "cargaHoraria")).append(",");
-            csv.append(safe(json, "modalidadeCurso")).append(",");
-            csv.append(safe(json, "certificadoObrigatorio")).append(",");
-            csv.append(safe(json, "categoriaConhecimento")).append(",");
-            csv.append(safe(json, "certificado")).append(",");
+            // Adiciona a linha do novo colaborador no CSV
+            csv.append(safe(json, "nomeColaborador")).append(";");
+            csv.append(safe(json, "departamentoTime")).append(";");
+            csv.append(safe(json, "emailContato")).append(";");
+            csv.append(safe(json, "idCertificado")).append(";");
+            csv.append(safe(json, "tipoCertificado")).append(";");
+            csv.append(safe(json, "nomeCertificado")).append(";");
+            csv.append(safe(json, "instituicaoEmissora")).append(";");
+            csv.append(safe(json, "areaConhecimento")).append(";");
+            csv.append(safe(json, "dataConclusao")).append(";");
+            csv.append(safe(json, "dataVencimento")).append(";");
+            csv.append(safe(json, "cargaHoraria")).append(";");
+            csv.append(safe(json, "modalidadeCurso")).append(";");
+            csv.append(safe(json, "certificadoObrigatorio")).append(";");
+            csv.append(safe(json, "categoriaConhecimento")).append(";");
+            csv.append(safe(json, "certificado")).append(";");
             csv.append(safe(json, "observacao")).append("\n");
 
+            // Converte o conteúdo CSV para InputStream
             ByteArrayInputStream inputStream = new ByteArrayInputStream(csv.toString().getBytes(StandardCharsets.UTF_8));
+
+            // Faz o upload do CSV atualizado para o S3
             s3.putObject(BUCKET_NAME, FILE_NAME, inputStream, null);
 
+            // Resposta de sucesso
             return new APIGatewayProxyResponseEvent().withStatusCode(200).withBody("{\"message\": \"CSV gerado e enviado com sucesso!\"}");
 
         } catch (Exception e) {
@@ -68,6 +78,7 @@ public class LambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent
 
     private String safe(JsonNode node, String fieldName) {
         JsonNode value = node.get(fieldName);
-        return value != null ? value.asText().replace(",", " ") : "";
+        String text = value != null ? value.asText().replace(",", " ").replace("\"", "\"\"") : "";
+        return text;
     }
 }

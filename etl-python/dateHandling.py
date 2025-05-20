@@ -23,7 +23,7 @@ SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:848479655698:etl-report'
 
 def lambda_handler(event, context):
     # Configuração do S3
-    bucket_origem = 'bucket-pops-trusted-certificacoes'
+    bucket_origem = 'bucket-pops-trusted-certificacoes-sprint'
     arquivo_s3 = 'limpo/colaboradores_sem_duplicatas.csv'
 
     try:
@@ -71,18 +71,6 @@ def lambda_handler(event, context):
                     else:
                         # Certificado já vencido este mês
                         colaboradores_vencidos.append(f"{nome} - {email} - {certificado} (Vencido em: {data_validade})")
-
-                    # (Opcional) Criar assinatura no SNS
-                    try:
-                        sns_client.subscribe(
-                            TopicArn=TOPIC_ARN,
-                            Protocol='email',
-                            Endpoint=email
-                        )
-                        logger.info(f"Assinatura criada para {email}")
-                    except Exception as e:
-                        logger.error(f"Erro ao criar assinatura para {email}: {e}")
-
             except Exception:
                 sem_data.append(linha)
         else:
