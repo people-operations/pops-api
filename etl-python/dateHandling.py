@@ -1,4 +1,5 @@
 import boto3
+import os
 import csv
 import io
 import re
@@ -18,12 +19,12 @@ def normalizar(texto):
 s3_client = boto3.client('s3')
 sns_client = boto3.client('sns')
 
-TOPIC_ARN = 'arn:aws:sns:us-east-1:848479655698:expiration-waning'
-SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:848479655698:etl-report'
+TOPIC_ARN = os.getenv('TOPIC_ARN', 'arn:aws:sns:us-east-1:848479655698:expiration-waning')
+SNS_TOPIC_ARN = os.getenv('SNS_TOPIC_ARN', 'arn:aws:sns:us-east-1:848479655698:etl-report')
 
 def lambda_handler(event, context):
     # Configuração do S3
-    bucket_origem = 'bucket-pops-trusted-certificacoes'
+    bucket_origem = os.getenv('BUCKET_ORIGEM', 'bucket-pops-trusted-certificacoes')
     arquivo_s3 = 'limpo/colaboradores_sem_duplicatas.csv'
 
     try:
