@@ -15,7 +15,7 @@ import java.nio.charset.StandardCharsets;
 public class LambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
     private final AmazonS3 s3 = AmazonS3ClientBuilder.defaultClient();
-    private final String BUCKET_NAME = "bucket-pops-raw-certificacoes";
+    private final String BUCKET_NAME = System.getenv("BUCKET_NAME");
     private final String FILE_NAME = "colaboradores_certificados_pv.csv";
     private final ObjectMapper objectMapper = new ObjectMapper();
     private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(LambdaHandler.class);
