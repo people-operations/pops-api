@@ -56,9 +56,15 @@ def lambda_handler(event, context):
         raise
 
     for linha in leitor:
-        if any(not linha[i].strip() for i in indices_obrigatorios):
+        if not linha or all(not campo.strip() for campo in linha):
+            continue  
+
+        if len(linha) <= max(indices_obrigatorios):
             continue
 
+        if any(not linha[i].strip() for i in indices_obrigatorios):
+            continue  
+            
         try:
             data_str = linha[idx_data_conclusao].strip()
             data_conclusao = datetime.strptime(data_str, "%Y-%m-%d")
