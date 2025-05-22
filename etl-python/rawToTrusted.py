@@ -4,6 +4,7 @@ from datetime import datetime
 import boto3
 import io
 import logging
+import os
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -13,8 +14,8 @@ def normalizar(texto):
 
 def lambda_handler(event, context):
     # === CONFIGURAÇÕES S3 ===
-    bucket_origem = 'bucket-pops-raw-certificacoes'
-    bucket_destino = 'bucket-pops-trusted-certificacoes'
+    bucket_origem = os.getenv('BUCKET_ORIGEM', 'bucket-pops-raw-certificacoes')
+    bucket_destino = os.getenv('BUCKET_DESTINO', 'bucket-pops-trusted-certificacoes')
     arquivo_s3 = 'colaboradores_certificados_pv.csv'
     arquivo_saida = 'limpo/colaboradores_sem_duplicatas.csv'
 
@@ -55,9 +56,15 @@ def lambda_handler(event, context):
         raise
 
     for linha in leitor:
-        if any(not linha[i].strip() for i in indices_obrigatorios):
+        if not linha or all(not campo.strip() for campo in linha):
+            continue  
+
+        if len(linha) <= max(indices_obrigatorios):
             continue
 
+        if any(not linha[i].strip() for i in indices_obrigatorios):
+            continue  
+            
         try:
             data_str = linha[idx_data_conclusao].strip()
             data_conclusao = datetime.strptime(data_str, "%Y-%m-%d")
