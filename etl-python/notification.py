@@ -74,15 +74,17 @@ def lambda_handler(event, context):
                         colaboradores_vencidos.append(f"{nome} - {email} - {certificado} (Vencido em: {data_validade})")
 
                     # (Opcional) Criar assinatura no SNS
-                    try:
-                        sns_client.subscribe(
-                            TopicArn=TOPIC_ARN,
-                            Protocol='email',
-                            Endpoint=email
-                        )
-                        logger.info(f"Assinatura criada para {email}")
-                    except Exception as e:
-                        logger.error(f"Erro ao criar assinatura para {email}: {e}")
+                    if email not in emails_assinados:
+                        try:
+                            sns_client.subscribe(
+                                TopicArn=TOPIC_ARN,
+                                Protocol='email',
+                                Endpoint=email
+                            )
+                            emails_assinados.add(email)
+                            logger.info(f"Assinatura criada para {email}")
+                        except Exception as e:
+                            logger.error(f"Erro ao criar assinatura para {email}: {e}")
 
             except Exception:
                 sem_data.append(linha)
