@@ -55,5 +55,8 @@ def lambda_handler(event, context):
     except Exception as e:
         return {
             "statusCode": 500,
-            "body": f"Erro ao processar: {str(e)}"
+            "body": json.dumps({
+                "message": "Erro ao processar",
+                "error": str(e)
+            })
         }
