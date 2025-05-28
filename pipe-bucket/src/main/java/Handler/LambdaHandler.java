@@ -66,7 +66,7 @@ public class LambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent
                 }
             } else {
                 return new APIGatewayProxyResponseEvent().withStatusCode(400)
-                        .withBody("{\"message\": \"Formato de entrada inválido. Deve ser um JSON com campo 'csv', um objeto ou um array de objetos.\"}");
+                        .withBody("{\"message\": \"Formato de entrada inválido. Deve ser um JSON objeto ou um array de objetos.\"}");
             }
 
             return new APIGatewayProxyResponseEvent().withStatusCode(200).withBody("{\"message\": \"CSV enviado com sucesso!\"}");
