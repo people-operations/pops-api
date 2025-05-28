@@ -1,11 +1,18 @@
 # Caminho da pasta com os arquivos
-$etlPath = "C:\grupo_pops\pops-api\etl-python"
+param(
+    [string]$etlPath = ".\etl-python"
+)
 
 # Lista de arquivos sem extensão
 $files = @("dateHandling", "notification", "rawToTrusted", "uploadToRaw")
 
 # Vai para o diretório
-Set-Location $etlPath
+if (Test-Path $etlPath) {
+    Set-Location $etlPath
+} else {
+    Write-Host "Diretório não encontrado: $etlPath"
+    exit 1
+}
 
 foreach ($file in $files) {
     $pyFile = "$file.py"
