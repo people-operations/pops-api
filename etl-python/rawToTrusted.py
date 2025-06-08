@@ -30,7 +30,8 @@ def lambda_handler(event, context):
         logger.error(f"Erro ao baixar arquivo do S3: {e}")
         raise
 
-    linhas_validas = set()
+    linhas_validas = []
+    ids_vistos = set()
 
     campos_obrigatorios = [
         "Nome completo do colaborador",
@@ -51,6 +52,7 @@ def lambda_handler(event, context):
         indices_obrigatorios = [cabecalho_normalizado.index(campo) for campo in campos_obrigatorios_normalizados]
         idx_data_conclusao = cabecalho_normalizado.index(normalizar("Data de conclusão"))
         idx_nome_colaborador = cabecalho_normalizado.index(normalizar("Nome completo do colaborador"))
+        idx_id_certificado = cabecalho_normalizado.index(normalizar("ID do certificado"))
     except ValueError as e:
         logger.error(f"Erro ao identificar os índices dos campos obrigatórios: {e}")
         raise
@@ -65,6 +67,12 @@ def lambda_handler(event, context):
         if any(not linha[i].strip() for i in indices_obrigatorios):
             continue  
             
+        id_certificado = linha[idx_id_certificado].strip()
+        if id_certificado in ids_vistos:
+            # Ignora duplicata
+            continue
+        ids_vistos.add(id_certificado)
+
         try:
             data_str = linha[idx_data_conclusao].strip()
             data_conclusao = datetime.strptime(data_str, "%Y-%m-%d")
@@ -73,7 +81,7 @@ def lambda_handler(event, context):
         except Exception:
             continue
 
-        linhas_validas.add(tuple(linha))
+        linhas_validas.append(linha)
 
     linhas_ordenadas = sorted(linhas_validas, key=lambda linha: linha[idx_nome_colaborador].lower())
 

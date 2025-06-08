@@ -44,26 +44,13 @@ public class LambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent
                     isSingleFieldFormat = first.fieldNames().hasNext() && !first.get(first.fieldNames().next()).isObject();
                 }
 
-                if (isSingleFieldFormat) {
-                    String header = null;
-                    for (JsonNode json : jsonNode) {
-                        Iterator<String> fieldNames = json.fieldNames();
-                        if (fieldNames.hasNext()) {
-                            String fieldName = fieldNames.next();
-                            if (header == null) {
-                                header = fieldName;
-                            }
-                            String value = json.get(fieldName).asText();
-                            newContent.append(value).append("\n");
-                        }
-                    }
-                    uploadCsvToS3(appendOrCreateCsvFile(newContent.toString(), true));
-                } else {
+                if (jsonNode.isArray()) {
                     for (JsonNode json : jsonNode) {
                         appendColaboradorCsvLine(newContent, json);
                     }
                     uploadCsvToS3(appendOrCreateCsvFile(newContent.toString(), true));
                 }
+
             } else {
                 return new APIGatewayProxyResponseEvent().withStatusCode(400)
                         .withBody("{\"message\": \"Formato de entrada inválido. Deve ser um JSON objeto ou um array de objetos.\"}");
