@@ -1,5 +1,5 @@
 # Caminho da pasta com os arquivos
-$etlPath = "C:\grupo_pops\pops-api\etl-python"
+$etlPath = Get-Location
 
 # Lista de arquivos sem extensão
 $files = @("dateHandling", "notification", "rawToTrusted", "uploadToRaw")
