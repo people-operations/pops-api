@@ -1,3 +1,5 @@
+package pops.application.controller
+
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
@@ -5,7 +7,6 @@ import org.mockito.Mockito.`when`
 import org.springframework.http.HttpStatus
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
-import pops.application.controller.PersonController
 import pops.application.dto.PersonLoginForm
 import pops.domain.model.entity.Person
 import pops.domain.model.enum.ContractType
@@ -14,7 +15,6 @@ import pops.infraestructure.security.TokenService
 import java.time.LocalDate
 
 class PersonControllerTest {
-
     private val service = Mockito.mock(PersonService::class.java)
     private val tokenService = Mockito.mock(TokenService::class.java)
     private val controller = PersonController(service, tokenService)
@@ -25,7 +25,7 @@ class PersonControllerTest {
             name = name,
             email = email,
             password = "password123",
-            cpf = "1234567890$id",
+            cpf = "12345678901",
             cnpj = null,
             linkedin = null,
             hiringDate = LocalDate.now(),

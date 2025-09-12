@@ -1,15 +1,23 @@
+package pops.domain.service
+
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import pops.domain.model.entity.Person
 import pops.domain.model.enum.ContractType
-import pops.domain.service.PersonService
 import pops.exception.DuplicateMemberException
 import java.util.*
 
 class PersonServiceTest {
-    val repository = org.mockito.Mockito.mock(pops.domain.repository.PersonRepository::class.java)
-    val service = PersonService(repository)
+    private lateinit var repository: pops.domain.repository.PersonRepository
+    private lateinit var service: PersonService
+
+    @BeforeEach
+    fun setUp() {
+        repository = org.mockito.Mockito.mock(pops.domain.repository.PersonRepository::class.java)
+        service = PersonService(repository)
+    }
 
     var person1 = Person(
         id = 1,

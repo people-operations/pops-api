@@ -38,7 +38,7 @@ class SecurityFilter : OncePerRequestFilter() {
         val login = tokenService!!.validateToken(token)
 
         if (login != null) {
-            val person: Person = personRepository!!.findByEmail(login)?.get() ?: throw IllegalArgumentException("User not found");
+            val person: Person = personRepository!!.findByEmail(login)?.orElseThrow { IllegalArgumentException("User not found") }!!
             val authorities = listOf(SimpleGrantedAuthority("ROLE_USER"))
             val authentication = UsernamePasswordAuthenticationToken(person, null, authorities)
             SecurityContextHolder.getContext().authentication = authentication

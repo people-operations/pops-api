@@ -11,7 +11,7 @@ class PersonService(
     private val repository: PersonRepository
 ) : CrudService<Person>(repository) {
     fun authenticate(email: String, password: String): Person? {
-        return repository.findByEmail(email)?.takeIf { it.get().password.equals(password) }!!.orElseThrow()
+        return repository.findByEmail(email)?.takeIf { it.get().password == password }?.orElseThrow()
     }
 
     override fun save(person: Person): Person {
