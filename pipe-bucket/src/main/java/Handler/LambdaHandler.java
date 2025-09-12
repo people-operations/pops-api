@@ -22,7 +22,7 @@ public class LambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent
     private final ObjectMapper objectMapper = new ObjectMapper();
     private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(LambdaHandler.class);
 
-    private final String CABECALHO = "Nome completo do colaborador;Departamento/time;E-mail;ID do certificado;Tipo do certificado;Nome do certificado;Instituição emissora;Área de conhecimento;Data de conclusão;Data de vencimento (se aplicável);Carga horária (se aplicável);Modalidade do curso;Obrigatoriedade de certificado;Categoria do conhecimento obtido;Upload do certificado (arquivo);Observações (opcional)";
+    private final String CABECALHO = "Nome completo do colaborador;Departamento/time;E-mail;ID do certificado;ID do certificado anterior (se aplicável);Tipo do certificado;Nome do certificado;Instituição emissora;Área de conhecimento;Data de conclusão;Data de vencimento (se aplicável);Carga horária (se aplicável);Modalidade do curso;Obrigatoriedade de certificado;Categoria do conhecimento obtido;Upload do certificado (arquivo);Observações (opcional)";
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent event, Context context) {
@@ -101,6 +101,7 @@ public class LambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent
         newContent.append(safe(json, "departamentoTime")).append(";");
         newContent.append(safe(json, "emailContato")).append(";");
         newContent.append(safe(json, "idCertificado")).append(";");
+        newContent.append(safe(json, "idCertificadoAnterior")).append(";");
         newContent.append(safe(json, "tipoCertificado")).append(";");
         newContent.append(safe(json, "nomeCertificado")).append(";");
         newContent.append(safe(json, "instituicaoEmissora")).append(";");
