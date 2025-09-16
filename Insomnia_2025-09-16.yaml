@@ -1,0 +1,1059 @@
+type: collection.insomnia.rest/5.0
+name: Scratch Pad
+meta:
+  id: wrk_scratchpad
+  created: 1717775327064
+  modified: 1717775327064
+  description: ""
+collection:
+  - name: pops-srv-manager-api
+    meta:
+      id: fld_7e2ac397bf0a4a31a3ccf9f392193f1f
+      created: 1751514938376
+      modified: 1758053515401
+      sortKey: -1751514938376
+      description: ""
+    children:
+      - name: person
+        meta:
+          id: fld_ea0b7752d2114a1ea39f675d0182054a
+          created: 1751516992652
+          modified: 1757653111497
+          sortKey: -1751516992652
+          description: ""
+        children:
+          - url: http://localhost:8080/api/persons
+            name: Listar pessoas
+            meta:
+              id: req_e0e2d295fdff4a9e9b5e3e62114368ab
+              created: 1751516986415
+              modified: 1757607021536
+              isPrivate: false
+              description: ""
+              sortKey: -1751516998335
+            method: GET
+            headers:
+              - name: User-Agent
+                value: insomnia/11.2.0
+                id: pair_90b5bd80ab364ceb83bac9f8975f6cd0
+            authentication:
+              type: none
+            scripts:
+              preRequest: |
+                const token = insomnia.environment.get("auth_token");
+
+                insomnia.request.addHeader({
+                  key: 'Authorization',
+                  value: 'Bearer ' + token
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: http://localhost:8080/api/persons/authenticate
+            name: Autenticar pessoas
+            meta:
+              id: req_18f9c2fdc100412a8578051dfaf8b2c1
+              created: 1757595829826
+              modified: 1757613224526
+              isPrivate: false
+              description: ""
+              sortKey: -1751516998435
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "email": "ana@peopleops.com",
+                  "password": "hash"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/11.2.0
+            scripts:
+              afterResponse: |-
+                const body = insomnia.response.json();
+                const token = body.token;
+
+                insomnia.environment.set("auth_token", token);
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: http://localhost:8080/api/persons/1
+            name: Listar pessoas por id
+            meta:
+              id: req_66814475b8da49939bc352bfec07574e
+              created: 1757599560610
+              modified: 1757613638930
+              isPrivate: false
+              description: ""
+              sortKey: -1751516429006
+            method: GET
+            headers:
+              - name: User-Agent
+                value: insomnia/11.2.0
+                id: pair_90b5bd80ab364ceb83bac9f8975f6cd0
+            authentication:
+              type: none
+            scripts:
+              preRequest: |
+                const token = insomnia.environment.get("auth_token");
+
+                insomnia.request.addHeader({
+                  key: 'Authorization',
+                  value: 'Bearer ' + token
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: http://localhost:8080/api/persons/new
+            name: Cadastrar pessoa
+            meta:
+              id: req_00fafb7f900842f5ac5859342ddd3f84
+              created: 1757600141296
+              modified: 1757653089450
+              isPrivate: false
+              description: ""
+              sortKey: -1751516144341.5
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "name": "teste silva",
+                  "email": "teste@peopleops.com",
+                  "password": "hash",
+                  "cpf": "45406669320",
+                  "cnpj": null,
+                  "linkedin": "/in/teste",
+                  "hiringDate": "2023-03-01",
+                  "dismissalDate": "9999-12-31",
+                  "active": true,
+                  "contractType": "CLT"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/11.2.0
+                id: pair_90b5bd80ab364ceb83bac9f8975f6cd0
+            authentication:
+              type: none
+            scripts:
+              preRequest: |
+                const token = insomnia.environment.get("auth_token");
+
+                insomnia.request.addHeader({
+                  key: 'Authorization',
+                  value: 'Bearer ' + token
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: http://localhost:8080/api/persons/1
+            name: Alterar pessoa
+            meta:
+              id: req_679e2935d3314f459f4878dc87b17462
+              created: 1757600151192
+              modified: 1757653109966
+              isPrivate: false
+              description: ""
+              sortKey: -1751516002009.25
+            method: PUT
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                	"id": 1,
+                		"name": "ANA SILVA",
+                		"email": "ANA@PEOPLEOPS.COM",
+                		"password": "hash",
+                		"cpf": "41809418801",
+                		"cnpj": null,
+                		"linkedin": "/in/ana_silva",
+                		"hiringDate": "2023-03-01",
+                		"dismissalDate": "9999-12-31",
+                		"active": true,
+                		"contractType": "CLT"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/11.2.0
+                id: pair_90b5bd80ab364ceb83bac9f8975f6cd0
+            authentication:
+              type: none
+            scripts:
+              preRequest: |
+                const token = insomnia.environment.get("auth_token");
+
+                insomnia.request.addHeader({
+                  key: 'Authorization',
+                  value: 'Bearer ' + token
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: http://localhost:8080/api/persons/5
+            name: Deletar pessoa
+            meta:
+              id: req_bf4977bb72ee4b3b845e8ec1c886ebb7
+              created: 1757600164977
+              modified: 1757607023546
+              isPrivate: false
+              description: ""
+              sortKey: -1751515930843.125
+            method: DELETE
+            headers:
+              - name: User-Agent
+                value: insomnia/11.2.0
+                id: pair_90b5bd80ab364ceb83bac9f8975f6cd0
+            authentication:
+              type: none
+            scripts:
+              preRequest: |
+                const token = insomnia.environment.get("auth_token");
+
+                insomnia.request.addHeader({
+                  key: 'Authorization',
+                  value: 'Bearer ' + token
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: http://localhost:8080/api/persons/disable/4
+            name: Desabilitar pessoa
+            meta:
+              id: req_89c761cea5624886ad5bd8e830bd4028
+              created: 1757606605911
+              modified: 1757607057245
+              isPrivate: false
+              description: ""
+              sortKey: -1751515966426.1875
+            method: PUT
+            headers:
+              - name: User-Agent
+                value: insomnia/11.2.0
+                id: pair_90b5bd80ab364ceb83bac9f8975f6cd0
+            authentication:
+              type: none
+            scripts:
+              preRequest: |
+                const token = insomnia.environment.get("auth_token");
+
+                insomnia.request.addHeader({
+                  key: 'Authorization',
+                  value: 'Bearer ' + token
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: http://localhost:8080/api/persons/enable/4
+            name: Habilitar pessoa
+            meta:
+              id: req_be980e3205dd41b1b4a9a11e312ed12f
+              created: 1757606798227
+              modified: 1757613674706
+              isPrivate: false
+              description: ""
+              sortKey: -1751515984217.7188
+            method: PUT
+            headers:
+              - name: User-Agent
+                value: insomnia/11.2.0
+                id: pair_90b5bd80ab364ceb83bac9f8975f6cd0
+            authentication:
+              type: none
+            scripts:
+              preRequest: |
+                const token = insomnia.environment.get("auth_token");
+
+                insomnia.request.addHeader({
+                  key: 'Authorization',
+                  value: 'Bearer ' + token
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: http://localhost:8080/api/persons/pageable?page=0&size=5&sortDirection=desc
+            name: Listar pessoas páginado
+            meta:
+              id: req_8a60bef269bc478e9a5b0b05b1cb1060
+              created: 1757610262327
+              modified: 1757613632222
+              isPrivate: false
+              description: ""
+              sortKey: -1751516713670.5
+            method: GET
+            headers:
+              - name: User-Agent
+                value: insomnia/11.2.0
+                id: pair_90b5bd80ab364ceb83bac9f8975f6cd0
+            authentication:
+              type: none
+            scripts:
+              preRequest: |
+                const token = insomnia.environment.get("auth_token");
+
+                insomnia.request.addHeader({
+                  key: 'Authorization',
+                  value: 'Bearer ' + token
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: level
+        meta:
+          id: fld_881fb54013234544904e0f6d435153fb
+          created: 1758051433792
+          modified: 1758052491084
+          sortKey: -1751516424431
+          description: ""
+        children:
+          - url: http://localhost:8080/api/levels
+            name: Listar levels
+            meta:
+              id: req_76dca70400604a0191b5bb90bd75c76c
+              created: 1758051433800
+              modified: 1758051497278
+              isPrivate: false
+              description: ""
+              sortKey: -1751516998335
+            method: GET
+            headers:
+              - name: User-Agent
+                value: insomnia/11.2.0
+                id: pair_90b5bd80ab364ceb83bac9f8975f6cd0
+            authentication:
+              type: none
+            scripts:
+              preRequest: |
+                const token = insomnia.environment.get("auth_token");
+
+                insomnia.request.addHeader({
+                  key: 'Authorization',
+                  value: 'Bearer ' + token
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: http://localhost:8080/api/levels/1
+            name: Listar levels por id
+            meta:
+              id: req_60b8018a7d164293843cf28f8051b512
+              created: 1758051433808
+              modified: 1758051512741
+              isPrivate: false
+              description: ""
+              sortKey: -1751516429006
+            method: GET
+            headers:
+              - name: User-Agent
+                value: insomnia/11.2.0
+                id: pair_90b5bd80ab364ceb83bac9f8975f6cd0
+            authentication:
+              type: none
+            scripts:
+              preRequest: |
+                const token = insomnia.environment.get("auth_token");
+
+                insomnia.request.addHeader({
+                  key: 'Authorization',
+                  value: 'Bearer ' + token
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: http://localhost:8080/api/levels/new
+            name: Cadastrar levels
+            meta:
+              id: req_3a20589f30f14c939c43f4deb6e2dc27
+              created: 1758051433809
+              modified: 1758051595448
+              isPrivate: false
+              description: ""
+              sortKey: -1751516144341.5
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                	"name": "ASSISTENTE",
+                	"description": "MUITA BAIXA EXPERIÊNCIA",
+                	"active": true
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/11.2.0
+                id: pair_90b5bd80ab364ceb83bac9f8975f6cd0
+            authentication:
+              type: none
+            scripts:
+              preRequest: |
+                const token = insomnia.environment.get("auth_token");
+
+                insomnia.request.addHeader({
+                  key: 'Authorization',
+                  value: 'Bearer ' + token
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: http://localhost:8080/api/levels/4
+            name: Alterar levels
+            meta:
+              id: req_b3b13c3042b842bfb32eedc6136313a8
+              created: 1758051433810
+              modified: 1758051628743
+              isPrivate: false
+              description: ""
+              sortKey: -1751516002009.25
+            method: PUT
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                	"id": 4,
+                	"name": "ASSISTENTE",
+                	"description": "POUCA EXPERIENCIA",
+                	"active": true
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/11.2.0
+                id: pair_90b5bd80ab364ceb83bac9f8975f6cd0
+            authentication:
+              type: none
+            scripts:
+              preRequest: |
+                const token = insomnia.environment.get("auth_token");
+
+                insomnia.request.addHeader({
+                  key: 'Authorization',
+                  value: 'Bearer ' + token
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: http://localhost:8080/api/levels/5
+            name: Deletar levels
+            meta:
+              id: req_a89baba809e944e79a949dac00e8bc7b
+              created: 1758051433813
+              modified: 1758051526156
+              isPrivate: false
+              description: ""
+              sortKey: -1751515930843.125
+            method: DELETE
+            headers:
+              - name: User-Agent
+                value: insomnia/11.2.0
+                id: pair_90b5bd80ab364ceb83bac9f8975f6cd0
+            authentication:
+              type: none
+            scripts:
+              preRequest: |
+                const token = insomnia.environment.get("auth_token");
+
+                insomnia.request.addHeader({
+                  key: 'Authorization',
+                  value: 'Bearer ' + token
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: http://localhost:8080/api/levels/disable/4
+            name: Desabilitar levels
+            meta:
+              id: req_5ffbee7a14dd45d08255b52c27962259
+              created: 1758051433814
+              modified: 1758051523780
+              isPrivate: false
+              description: ""
+              sortKey: -1751515966426.1875
+            method: PUT
+            headers:
+              - name: User-Agent
+                value: insomnia/11.2.0
+                id: pair_90b5bd80ab364ceb83bac9f8975f6cd0
+            authentication:
+              type: none
+            scripts:
+              preRequest: |
+                const token = insomnia.environment.get("auth_token");
+
+                insomnia.request.addHeader({
+                  key: 'Authorization',
+                  value: 'Bearer ' + token
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: http://localhost:8080/api/levels/enable/4
+            name: Habilitar levels
+            meta:
+              id: req_44cd35ba140a441d9fa95e86b8f166db
+              created: 1758051433816
+              modified: 1758051521805
+              isPrivate: false
+              description: ""
+              sortKey: -1751515984217.7188
+            method: PUT
+            headers:
+              - name: User-Agent
+                value: insomnia/11.2.0
+                id: pair_90b5bd80ab364ceb83bac9f8975f6cd0
+            authentication:
+              type: none
+            scripts:
+              preRequest: |
+                const token = insomnia.environment.get("auth_token");
+
+                insomnia.request.addHeader({
+                  key: 'Authorization',
+                  value: 'Bearer ' + token
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: positions
+        meta:
+          id: fld_da6cecf94b724049b097cdba07e6caf2
+          created: 1758052174856
+          modified: 1758052490352
+          sortKey: -1751515693115
+          description: ""
+        children:
+          - url: http://localhost:8080/api/positions
+            name: Listar positions
+            meta:
+              id: req_a953dc8329f343fb8af3495d1919a438
+              created: 1758052174858
+              modified: 1758052189951
+              isPrivate: false
+              description: ""
+              sortKey: -1751516998335
+            method: GET
+            headers:
+              - name: User-Agent
+                value: insomnia/11.2.0
+                id: pair_90b5bd80ab364ceb83bac9f8975f6cd0
+            authentication:
+              type: none
+            scripts:
+              preRequest: |
+                const token = insomnia.environment.get("auth_token");
+
+                insomnia.request.addHeader({
+                  key: 'Authorization',
+                  value: 'Bearer ' + token
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: http://localhost:8080/api/positions/1
+            name: Listar positions por id
+            meta:
+              id: req_7522e1e3005e495cbef75914f4c3ed32
+              created: 1758052174860
+              modified: 1758052271169
+              isPrivate: false
+              description: ""
+              sortKey: -1751516429006
+            method: GET
+            headers:
+              - name: User-Agent
+                value: insomnia/11.2.0
+                id: pair_90b5bd80ab364ceb83bac9f8975f6cd0
+            authentication:
+              type: none
+            scripts:
+              preRequest: |
+                const token = insomnia.environment.get("auth_token");
+
+                insomnia.request.addHeader({
+                  key: 'Authorization',
+                  value: 'Bearer ' + token
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: http://localhost:8080/api/positions/new
+            name: Cadastrar positions
+            meta:
+              id: req_6e96f1b14ee540be9ca965bd93ceea48
+              created: 1758052174861
+              modified: 1758052272656
+              isPrivate: false
+              description: ""
+              sortKey: -1751516144341.5
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                		"name": "ARQUITETO DE SOLUÇÕES",
+                		"description": "ARQUITETO DE SOLUÇÕES",
+                		"active": true
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/11.2.0
+                id: pair_90b5bd80ab364ceb83bac9f8975f6cd0
+            authentication:
+              type: none
+            scripts:
+              preRequest: |
+                const token = insomnia.environment.get("auth_token");
+
+                insomnia.request.addHeader({
+                  key: 'Authorization',
+                  value: 'Bearer ' + token
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: http://localhost:8080/api/positions/5
+            name: Alterar positions
+            meta:
+              id: req_68affc9c9e56469a80356f5416d1f3b2
+              created: 1758052174862
+              modified: 1758052290696
+              isPrivate: false
+              description: ""
+              sortKey: -1751516002009.25
+            method: PUT
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                	"id": 5,
+                	"name": "ARQUITETO DE SOLUÇÕES",
+                	"description": "ARQUITETO",
+                	"active": true
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/11.2.0
+                id: pair_90b5bd80ab364ceb83bac9f8975f6cd0
+            authentication:
+              type: none
+            scripts:
+              preRequest: |
+                const token = insomnia.environment.get("auth_token");
+
+                insomnia.request.addHeader({
+                  key: 'Authorization',
+                  value: 'Bearer ' + token
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: http://localhost:8080/api/positions/5
+            name: Deletar positions
+            meta:
+              id: req_0d2c3ce52ae6496686a47f4736b60790
+              created: 1758052174864
+              modified: 1758052220261
+              isPrivate: false
+              description: ""
+              sortKey: -1751515930843.125
+            method: DELETE
+            headers:
+              - name: User-Agent
+                value: insomnia/11.2.0
+                id: pair_90b5bd80ab364ceb83bac9f8975f6cd0
+            authentication:
+              type: none
+            scripts:
+              preRequest: |
+                const token = insomnia.environment.get("auth_token");
+
+                insomnia.request.addHeader({
+                  key: 'Authorization',
+                  value: 'Bearer ' + token
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: http://localhost:8080/api/positions/disable/4
+            name: Desabilitar positions
+            meta:
+              id: req_a5daa9ac33c040cb95184fce7c6a569f
+              created: 1758052174865
+              modified: 1758052481874
+              isPrivate: false
+              description: ""
+              sortKey: -1751515966426.1875
+            method: PUT
+            headers:
+              - name: User-Agent
+                value: insomnia/11.2.0
+                id: pair_90b5bd80ab364ceb83bac9f8975f6cd0
+            authentication:
+              type: none
+            scripts:
+              preRequest: |
+                const token = insomnia.environment.get("auth_token");
+
+                insomnia.request.addHeader({
+                  key: 'Authorization',
+                  value: 'Bearer ' + token
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: http://localhost:8080/api/positions/enable/4
+            name: Habilitar positions
+            meta:
+              id: req_c5a9c97420ee48b8ba67a3b068e8ba81
+              created: 1758052174867
+              modified: 1758052470562
+              isPrivate: false
+              description: ""
+              sortKey: -1751515984217.7188
+            method: PUT
+            headers:
+              - name: User-Agent
+                value: insomnia/11.2.0
+                id: pair_90b5bd80ab364ceb83bac9f8975f6cd0
+            authentication:
+              type: none
+            scripts:
+              preRequest: |
+                const token = insomnia.environment.get("auth_token");
+
+                insomnia.request.addHeader({
+                  key: 'Authorization',
+                  value: 'Bearer ' + token
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - url: http://localhost:8080/api/persons/authenticate
+        name: Autenticar pessoas
+        meta:
+          id: req_671d261113b04205939deaf6fd01d57d
+          created: 1751517953334
+          modified: 1758051457292
+          isPrivate: false
+          description: ""
+          sortKey: -1757595798576
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "email": "ana@peopleops.com",
+              "password": "hash"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.2.0
+        scripts:
+          afterResponse: |-
+            const body = insomnia.response.json();
+            const token = body.token;
+
+            insomnia.environment.set("auth_token", token);
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://54.90.137.21/api/actuator/health
+        name: Health
+        meta:
+          id: req_2466e1672b1a4e7fa01ed90a05c2ce13
+          created: 1757595798476
+          modified: 1758050515069
+          isPrivate: false
+          description: ""
+          sortKey: -1757595798476
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.5.0
+            id: pair_ed434ddb407e4a6c9614d0575616cd01
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/api/swagger-ui.html
+        name: Swagger
+        meta:
+          id: req_fdcc1b42c12345e98c7f99164e95f01a
+          created: 1758051661813
+          modified: 1758051704692
+          isPrivate: false
+          description: ""
+          sortKey: -1754556398455.5
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.5.0
+            id: pair_ed434ddb407e4a6c9614d0575616cd01
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: poc atendimento
+    meta:
+      id: fld_1a9ef3e4a86e4304bab9a2c2b2e694df
+      created: 1751514961799
+      modified: 1751514969084
+      sortKey: -1751514961799
+      description: ""
+    children:
+      - url: https://tczwq6a7jpmtk37iizf2sdvzea0miwlh.lambda-url.us-east-1.on.aws/
+        name: upload bucket s3
+        meta:
+          id: req_188b4edc68d542cea2a662182b8e103c
+          created: 1744138969949
+          modified: 1751514976123
+          isPrivate: false
+          description: ""
+          sortKey: -1751514973760
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"nomeColaborador": "Miguel Araujo",
+            	"departamentoTime": "Tecnologia da Informação",
+            	"emailContato": "miguel.araujo@email.com",
+            	"idCertificado": "CERT123456",
+            	"tipoCertificado": "Especialização",
+            	"nomeCertificado": "Certificação Avançada em Java",
+            	"instituicaoEmissora": "Universidade Tech",
+            	"areaConhecimento": "Desenvolvimento de Software",
+            	"dataConclusao": "2025-04-20",
+            	"dataVencimento": "2027-04-20",
+            	"cargaHoraria": "120",
+            	"modalidadeCurso": "Online",
+            	"certificadoObrigatorio": "Sim",
+            	"categoriaConhecimento": "Programação",
+            	"certificado": "certificado.pdf",
+            	"observacao": ""
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.0.1
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: https://msfxosrnsh.execute-api.us-east-1.amazonaws.com/HO/bucket-pops-raw-certificacoes/a.json
+        name: upload api gateway
+        meta:
+          id: req_3d71835817ff4e548612445743dd4f1f
+          created: 1747718287054
+          modified: 1751514977241
+          isPrivate: false
+          description: ""
+          sortKey: -1751514973860
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"tes":"te"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.0.2
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: https://lljgrjvnyw2dqsme2qrvzdppea0ebpxs.lambda-url.us-east-1.on.aws/
+        name: upload bucket raw - lote
+        meta:
+          id: req_63e0ff5eda3d4ade8f0807fc254779fd
+          created: 1747893202438
+          modified: 1751514973683
+          isPrivate: false
+          description: ""
+          sortKey: -1751514973660
+        method: POST
+        body:
+          mimeType: application/octet-stream
+          fileName: C:\Users\migue\Downloads\novo_relatrio_22-05-2025.xlsx
+        headers:
+          - name: Content-Type
+            value: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+          - name: User-Agent
+            value: insomnia/11.0.1
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_99d30891da4bdcebc63947a8fc17f076de878684
+    created: 1721773639930
+    modified: 1758052482857
+environments:
+  name: Base Environment
+  meta:
+    id: env_99d30891da4bdcebc63947a8fc17f076de878684
+    created: 1721773639928
+    modified: 1758052482858
+    isPrivate: false
+  data:
+    auth_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJwb3BzLXNydi1tYW5hZ2VyLWFwaSIsInN1YiI6IkFOQUBQRU9QTEVPUFMuQ09NIiwiZXhwIjoxNzU4MDU5NTI1fQ.3B3b1-dlxE1OCvpvymoA-dHHjCQ3sO0o8SfQzQ1gW-g

@@ -8,7 +8,9 @@ import pops.infraestructure.utilities.CrudService
 
 @Service
 class PersonService(
-    private val repository: PersonRepository
+    private val repository: PersonRepository,
+    private val levelService: LevelService,
+    private val positionService: PositionService
 ) : CrudService<Person>(repository) {
     fun authenticate(email: String, password: String): Person? {
         return repository.findByEmail(email)?.takeIf { it.get().password == password }?.orElseThrow()
