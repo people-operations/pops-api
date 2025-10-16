@@ -3,23 +3,33 @@ package pops.domain.service
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import pops.domain.model.entity.Project
-import pops.domain.model.entity.Skill
 import pops.domain.repository.ProjectRepository
 import pops.domain.repository.SkillRepository
 import pops.infraestructure.utilities.CrudService
+import pops.application.dto.ProjectUpdateRequest
+import java.math.BigDecimal
+import java.time.LocalDate
 
 @Service
 class ProjectService(
     private val projectRepository: ProjectRepository,
     private val skillRepository: SkillRepository
-) : CrudService<Project, Long>(projectRepository) {
+) {
+    
+    private val crudService = CrudService(projectRepository)
+
+    init {
+        println("✅ ProjectService inicializado com repository = $projectRepository")
+    }
     
     fun findActiveProjects(): List<Project> = projectRepository.findByActiveTrue()
+    
+    fun findInactiveProjects(): List<Project> = projectRepository.findByActiveFalse()
     
     fun findActiveProjectsByStatus(status: pops.domain.model.enum.ProjectStatus): List<Project> = 
         projectRepository.findByActiveTrueAndStatus(status)
     
-    override fun save(project: Project): Project {
+    fun save(project: Project): Project {
         require(project.name.isNotBlank()) { "O nome do projeto não pode ser vazio" }
         
         if (projectRepository.existsByName(project.name)) {
@@ -35,10 +45,10 @@ class ProjectService(
             }
         }
         
-        return super.save(project)
+        return crudService.save(project)
     }
     
-    override fun update(id: Long, project: Project): Project {
+    fun update(id: Long, project: Project): Project {
         require(project.name.isNotBlank()) { "O nome do projeto não pode ser vazio" }
         
         val existingProject = findById(id)
@@ -57,8 +67,14 @@ class ProjectService(
             }
         }
         
-        return super.update(id, project)
+        return crudService.update(id, project)
     }
+    
+    fun findById(id: Long): Project = crudService.findById(id)
+    
+    fun findAll(): List<Project> = crudService.findAll()
+    
+    fun findAllPageable(pageable: org.springframework.data.domain.Pageable): org.springframework.data.domain.Page<Project> = crudService.findAllPageable(pageable)
     
     @Transactional
     fun disable(id: Long): Project {
@@ -72,6 +88,109 @@ class ProjectService(
         val project = findById(id)
         val enabledProject = project.copy(active = true)
         return projectRepository.save(enabledProject)
+    }
+    
+    @Transactional
+    fun saveWithSkills(
+        name: String,
+        type: String?,
+        description: String?,
+        status: pops.domain.model.enum.ProjectStatus,
+        budget: BigDecimal?,
+        startDate: LocalDate?,
+        endDate: LocalDate?,
+        area: String?,
+        skillIds: List<Long>
+    ): Project {
+        require(name.isNotBlank()) { "O nome do projeto não pode ser vazio" }
+        
+        if (projectRepository.existsByName(name)) {
+            throw IllegalArgumentException("Já existe um projeto com o nome informado")
+        }
+        
+        // Buscar skills pelos IDs fornecidos
+        val skills = if (skillIds.isNotEmpty()) {
+            val existingSkills = skillRepository.findAllById(skillIds)
+            if (existingSkills.size != skillIds.size) {
+                throw IllegalArgumentException("Uma ou mais skills informadas não existem")
+            }
+            existingSkills.toMutableSet()
+        } else {
+            mutableSetOf()
+        }
+        
+        val project = Project(
+            name = name,
+            type = type,
+            description = description,
+            status = status,
+            budget = budget,
+            startDate = startDate,
+            endDate = endDate,
+            area = area,
+            requiredSkills = skills
+        )
+        
+        return projectRepository.save(project)
+    }
+    
+    @Transactional
+    fun updatePartial(id: Long, projectUpdate: ProjectUpdateRequest): Project {
+        val existingProject = findById(id)
+        
+        // Validar nome se fornecido
+        if (projectUpdate.name != null) {
+            require(projectUpdate.name.isNotBlank()) { "O nome do projeto não pode ser vazio" }
+            
+            // Verificar se o nome já existe em outro projeto
+            if (projectUpdate.name != existingProject.name && projectRepository.existsByName(projectUpdate.name)) {
+                throw IllegalArgumentException("Já existe um projeto com o nome informado")
+            }
+        }
+        
+        // Validar skills se fornecidas
+        val skills = if (projectUpdate.skillIds != null) {
+            if (projectUpdate.skillIds.isNotEmpty()) {
+                val existingSkills = skillRepository.findAllById(projectUpdate.skillIds)
+                if (existingSkills.size != projectUpdate.skillIds.size) {
+                    throw IllegalArgumentException("Uma ou mais skills informadas não existem")
+                }
+                existingSkills.toMutableSet()
+            } else {
+                mutableSetOf()
+            }
+        } else {
+            existingProject.requiredSkills
+        }
+        
+        // Criar projeto atualizado com apenas os campos fornecidos
+        val updatedProject = existingProject.copy(
+            name = projectUpdate.name ?: existingProject.name,
+            type = projectUpdate.type ?: existingProject.type,
+            description = projectUpdate.description ?: existingProject.description,
+            status = projectUpdate.status ?: existingProject.status,
+            budget = projectUpdate.budget ?: existingProject.budget,
+            startDate = projectUpdate.startDate ?: existingProject.startDate,
+            endDate = projectUpdate.endDate ?: existingProject.endDate,
+            area = projectUpdate.area ?: existingProject.area,
+            requiredSkills = skills
+        )
+        
+        return projectRepository.save(updatedProject)
+    }
+    
+    @Transactional
+    fun deleteProject(id: Long) {
+        val project = findById(id)
+        
+        // Remover todas as associações com skills antes de deletar o projeto
+        if (project.requiredSkills.isNotEmpty()) {
+            val projectWithoutSkills = project.copy(requiredSkills = mutableSetOf())
+            projectRepository.save(projectWithoutSkills)
+        }
+        
+        // Agora deletar o projeto
+        projectRepository.deleteById(id)
     }
 }
 

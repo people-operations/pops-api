@@ -5,7 +5,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.transaction.annotation.Transactional
 
-abstract class CrudService<T : Any, ID : Any>(protected val repository: JpaRepository<T, ID>) {
+class CrudService<T : Any, ID : Any>(private val repository: JpaRepository<T, ID>) {
     
     fun findAll(): List<T> = repository.findAll()
     
@@ -15,10 +15,10 @@ abstract class CrudService<T : Any, ID : Any>(protected val repository: JpaRepos
         .orElseThrow { IllegalArgumentException("Recurso não encontrado com ID: $id") }
     
     @Transactional
-    open fun save(entity: T): T = repository.save(entity)
+    fun save(entity: T): T = repository.save(entity)
     
     @Transactional
-    open fun update(id: ID, entity: T): T {
+    fun update(id: ID, entity: T): T {
         if (!repository.existsById(id)) {
             throw IllegalArgumentException("Recurso não encontrado com ID: $id")
         }

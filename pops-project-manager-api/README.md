@@ -72,3 +72,6 @@ API para gerenciamento de projetos e skills desenvolvida em Kotlin com Spring Bo
 - `active`: Boolean (padrão: true)
 - `requiredSkills`: Set<Skill> (opcional)
 
+
+
+

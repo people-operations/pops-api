@@ -10,6 +10,7 @@ import jakarta.persistence.EnumType
 import jakarta.persistence.ManyToMany
 import jakarta.persistence.JoinTable
 import jakarta.persistence.JoinColumn
+import jakarta.persistence.FetchType
 import pops.domain.model.enum.ProjectStatus
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -48,7 +49,7 @@ data class Project(
     @Column(nullable = false)
     val active: Boolean = true,
     
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "project_skills",
         joinColumns = [JoinColumn(name = "project_id")],
@@ -56,4 +57,5 @@ data class Project(
     )
     val requiredSkills: MutableSet<Skill> = mutableSetOf()
 )
+
 

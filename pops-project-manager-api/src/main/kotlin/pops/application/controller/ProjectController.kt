@@ -8,11 +8,16 @@ import org.springframework.web.bind.annotation.*
 import pops.domain.model.entity.Project
 import pops.domain.model.enum.ProjectStatus
 import pops.domain.service.ProjectService
+import pops.application.dto.ProjectCreateRequest
+import pops.application.dto.ProjectUpdateRequest
+import pops.application.dto.ProjectResponse
+import pops.application.dto.SkillResponse
+import pops.infraestructure.utilities.CrudService
 
 @RestController
 @RequestMapping("/projects")
 class ProjectController(
-    private val service: ProjectService
+    private val service: ProjectService,
 ) {
 
     private val logger = LoggerFactory.getLogger(ProjectController::class.java)
@@ -20,6 +25,13 @@ class ProjectController(
     @GetMapping
     fun listActiveProjects(): ResponseEntity<Any> {
         val projects = service.findActiveProjects()
+        return if (projects.isEmpty()) ResponseEntity.noContent().build()
+        else ResponseEntity.ok(projects)
+    }
+
+    @GetMapping("/inactive")
+    fun listInactiveProjects(): ResponseEntity<Any> {
+        val projects = service.findInactiveProjects()
         return if (projects.isEmpty()) ResponseEntity.noContent().build()
         else ResponseEntity.ok(projects)
     }
@@ -39,21 +51,40 @@ class ProjectController(
     }
 
     @GetMapping("/{id}")
-    fun getProjectById(@PathVariable id: Long): ResponseEntity<Project> {
-        val project = service.findById(id)
-        return ResponseEntity.ok(project)
+    fun getProjectById(@PathVariable id: Long): ResponseEntity<Any> {
+        logger.info("Buscando projeto com ID: $id")
+        try {
+            val project = service.findById(id)
+            logger.info("Projeto encontrado: ${project.name}")
+            
+            // Retornar o projeto diretamente primeiro para testar
+            return ResponseEntity.ok(project)
+        } catch (e: Exception) {
+            logger.error("Erro ao buscar projeto $id: ${e.message}", e)
+            throw e
+        }
     }
 
     @PostMapping
-    fun createProject(@RequestBody project: Project): ResponseEntity<Project> {
-        val newProject = service.save(project)
+    fun createProject(@RequestBody projectRequest: ProjectCreateRequest): ResponseEntity<Project> {
+        val newProject = service.saveWithSkills(
+            name = projectRequest.name,
+            type = projectRequest.type,
+            description = projectRequest.description,
+            status = projectRequest.status,
+            budget = projectRequest.budget,
+            startDate = projectRequest.startDate,
+            endDate = projectRequest.endDate,
+            area = projectRequest.area,
+            skillIds = projectRequest.skillIds
+        )
         logger.info("Projeto criado com sucesso: ${newProject.id}")
         return ResponseEntity.status(201).body(newProject)
     }
 
-    @PutMapping("/{id}")
-    fun updateProject(@PathVariable id: Long, @RequestBody project: Project): ResponseEntity<Project> {
-        val updatedProject = service.update(id, project)
+    @PatchMapping("/{id}")
+    fun updateProject(@PathVariable id: Long, @RequestBody projectUpdate: ProjectUpdateRequest): ResponseEntity<Project> {
+        val updatedProject = service.updatePartial(id, projectUpdate)
         logger.info("Projeto atualizado com sucesso: $id")
         return ResponseEntity.ok(updatedProject)
     }
@@ -74,9 +105,18 @@ class ProjectController(
 
     @DeleteMapping("/{id}")
     fun deleteProject(@PathVariable id: Long): ResponseEntity<Any> {
-        service.delete(id)
-        logger.info("Projeto deletado com sucesso: $id")
-        return ResponseEntity.noContent().build()
+        try {
+            service.deleteProject(id)
+            logger.info("Projeto deletado com sucesso: $id")
+            return ResponseEntity.noContent().build()
+        } catch (e: IllegalArgumentException) {
+            logger.error("Erro ao deletar projeto $id: ${e.message}")
+            return ResponseEntity.notFound().build()
+        } catch (e: Exception) {
+            logger.error("Erro interno ao deletar projeto $id: ${e.message}")
+            return ResponseEntity.internalServerError().body(mapOf("error" to "Erro interno do servidor"))
+        }
     }
 }
+
 

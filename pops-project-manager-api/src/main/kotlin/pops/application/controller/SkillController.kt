@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.*
 import pops.domain.model.entity.Skill
 import pops.domain.model.enum.SkillType
 import pops.domain.service.SkillService
+import pops.application.dto.SkillCreateRequest
+import pops.application.dto.SkillUpdateRequest
+import pops.application.dto.SkillResponse
 
 @RestController
 @RequestMapping("/skills")
@@ -20,6 +23,13 @@ class SkillController(
     @GetMapping
     fun listSkills(): ResponseEntity<Any> {
         val skills = service.findActiveSkills()
+        return if (skills.isEmpty()) ResponseEntity.noContent().build()
+        else ResponseEntity.ok(skills)
+    }
+
+    @GetMapping("/inactive")
+    fun listInactiveSkills(): ResponseEntity<Any> {
+        val skills = service.findInactiveSkills()
         return if (skills.isEmpty()) ResponseEntity.noContent().build()
         else ResponseEntity.ok(skills)
     }
@@ -39,23 +49,52 @@ class SkillController(
     }
 
     @GetMapping("/{id}")
-    fun getSkillById(@PathVariable id: Long): ResponseEntity<Skill> {
-        val skill = service.findById(id)
-        return ResponseEntity.ok(skill)
+    fun getSkillById(@PathVariable id: Long): ResponseEntity<SkillResponse> {
+        logger.info("Buscando skill com ID: $id")
+        try {
+            val skill = service.findById(id)
+            logger.info("Skill encontrada: ${skill.name}")
+            
+            val skillResponse = SkillResponse(
+                id = skill.id,
+                name = skill.name,
+                description = skill.description,
+                type = skill.type,
+                active = skill.active
+            )
+            
+            return ResponseEntity.ok(skillResponse)
+        } catch (e: Exception) {
+            logger.error("Erro ao buscar skill $id: ${e.message}", e)
+            throw e
+        }
     }
 
     @PostMapping
-    fun createSkill(@RequestBody skill: Skill): ResponseEntity<Skill> {
+    fun createSkill(@RequestBody skillRequest: SkillCreateRequest): ResponseEntity<Skill> {
+        val skill = Skill(
+            name = skillRequest.name,
+            description = skillRequest.description,
+            type = skillRequest.type
+        )
         val newSkill = service.save(skill)
         logger.info("Skill criada com sucesso: ${newSkill.id}")
         return ResponseEntity.status(201).body(newSkill)
     }
 
-    @PutMapping("/{id}")
-    fun updateSkill(@PathVariable id: Long, @RequestBody skill: Skill): ResponseEntity<Skill> {
-        val updatedSkill = service.update(id, skill)
-        logger.info("Skill atualizada com sucesso: $id")
-        return ResponseEntity.ok(updatedSkill)
+    @PatchMapping("/{id}")
+    fun updateSkill(@PathVariable id: Long, @RequestBody skillUpdate: SkillUpdateRequest): ResponseEntity<Any> {
+        try {
+            val updatedSkill = service.updatePartial(id, skillUpdate)
+            logger.info("Skill atualizada com sucesso: $id")
+            return ResponseEntity.ok(updatedSkill)
+        } catch (e: IllegalArgumentException) {
+            logger.error("Erro ao atualizar skill $id: ${e.message}")
+            return ResponseEntity.badRequest().body(mapOf("error" to e.message))
+        } catch (e: Exception) {
+            logger.error("Erro interno ao atualizar skill $id: ${e.message}")
+            return ResponseEntity.internalServerError().body(mapOf("error" to "Erro interno do servidor"))
+        }
     }
 
     @PutMapping("/disable/{id}")
@@ -74,9 +113,18 @@ class SkillController(
 
     @DeleteMapping("/{id}")
     fun deleteSkill(@PathVariable id: Long): ResponseEntity<Any> {
-        service.delete(id)
-        logger.info("Skill deletada com sucesso: $id")
-        return ResponseEntity.noContent().build()
+        try {
+            service.deleteSkill(id)
+            logger.info("Skill deletada com sucesso: $id")
+            return ResponseEntity.noContent().build()
+        } catch (e: IllegalArgumentException) {
+            logger.error("Erro ao deletar skill $id: ${e.message}")
+            return ResponseEntity.badRequest().body(mapOf("error" to e.message))
+        } catch (e: Exception) {
+            logger.error("Erro interno ao deletar skill $id: ${e.message}")
+            return ResponseEntity.internalServerError().body(mapOf("error" to "Erro interno do servidor"))
+        }
     }
 }
+
 

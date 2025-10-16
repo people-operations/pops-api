@@ -121,3 +121,6 @@ JOIN project_skills ps ON p.id = ps.project_id
 JOIN skill s ON ps.skill_id = s.id
 ORDER BY p.name, s.name;
 
+
+
+

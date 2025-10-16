@@ -142,3 +142,6 @@ MYSQL_PASSWORD=senha_super_segura
 SPRING_PROFILES_ACTIVE=mysql
 ```
 
+
+
+

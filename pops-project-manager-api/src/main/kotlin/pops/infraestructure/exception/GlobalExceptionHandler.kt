@@ -20,13 +20,19 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException::class)
     fun handleIllegalArgumentException(ex: IllegalArgumentException, request: WebRequest): ResponseEntity<ErrorResponse> {
+        val status = if (ex.message?.contains("não encontrado") == true) {
+            HttpStatus.NOT_FOUND
+        } else {
+            HttpStatus.BAD_REQUEST
+        }
+        
         val errorResponse = ErrorResponse(
-            status = HttpStatus.BAD_REQUEST.value(),
-            error = "Bad Request",
+            status = status.value(),
+            error = if (status == HttpStatus.NOT_FOUND) "Not Found" else "Bad Request",
             message = ex.message ?: "Erro de validação",
             path = request.getDescription(false).replace("uri=", "")
         )
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse)
+        return ResponseEntity.status(status).body(errorResponse)
     }
 
     @ExceptionHandler(Exception::class)
@@ -40,4 +46,5 @@ class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse)
     }
 }
+
 

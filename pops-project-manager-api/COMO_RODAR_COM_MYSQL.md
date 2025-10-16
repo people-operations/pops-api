@@ -82,3 +82,6 @@ Execute o arquivo `database/setup.sql` no MySQL antes de rodar a aplicação.
 1. Verifique se a porta 8081 está livre
 2. Confirme se o Java 17+ está instalado
 3. Verifique os logs de erro
+
+
+
