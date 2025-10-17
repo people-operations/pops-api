@@ -13,8 +13,10 @@ interface SkillRepository : JpaRepository<Skill, Long> {
     
     fun findByActiveFalse(): List<Skill>
     
-    @Query("SELECT s FROM skill s WHERE s.active = true AND s.type = :type")
-    fun findByActiveTrueAndType(type: pops.domain.model.enum.SkillType): List<Skill>
+    @Query("SELECT s FROM skill s WHERE s.active = true AND s.type.id = :typeId")
+    fun findByActiveTrueAndSkillTypeId(typeId: Long): List<Skill>
+    
+    fun findByType_Id(typeId: Long): List<Skill>
 }
 
 

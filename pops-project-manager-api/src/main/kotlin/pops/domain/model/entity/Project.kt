@@ -5,13 +5,13 @@ import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
-import jakarta.persistence.Enumerated
-import jakarta.persistence.EnumType
 import jakarta.persistence.ManyToMany
 import jakarta.persistence.JoinTable
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.FetchType
-import pops.domain.model.enum.ProjectStatus
+import jakarta.persistence.ManyToOne
+import pops.domain.model.entity.ProjectStatusEntity
+import pops.domain.model.entity.ProjectTypeEntity
 import java.math.BigDecimal
 import java.time.LocalDate
 
@@ -24,15 +24,16 @@ data class Project(
     @Column(nullable = false, length = 200)
     val name: String,
     
-    @Column(length = 50)
-    val type: String?,
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "project_type_id")
+    val type: ProjectTypeEntity?,
     
     @Column(length = 1000)
     val description: String?,
     
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    val status: ProjectStatus,
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "project_status_id", nullable = false)
+    val status: ProjectStatusEntity,
     
     @Column(precision = 15, scale = 2)
     val budget: BigDecimal?,

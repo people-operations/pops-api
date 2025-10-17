@@ -6,12 +6,13 @@ import org.springframework.data.web.PageableDefault
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import pops.domain.model.entity.Project
-import pops.domain.model.enum.ProjectStatus
 import pops.domain.service.ProjectService
 import pops.application.dto.ProjectCreateRequest
 import pops.application.dto.ProjectUpdateRequest
 import pops.application.dto.ProjectResponse
 import pops.application.dto.SkillResponse
+import pops.application.dto.ProjectTypeResponse
+import pops.application.dto.ProjectStatusResponse
 import pops.infraestructure.utilities.CrudService
 
 @RestController
@@ -43,9 +44,9 @@ class ProjectController(
         else ResponseEntity.ok(projects.content)
     }
 
-    @GetMapping("/status/{status}")
-    fun listProjectsByStatus(@PathVariable status: ProjectStatus): ResponseEntity<Any> {
-        val projects = service.findActiveProjectsByStatus(status)
+    @GetMapping("/status/{statusId}")
+    fun listProjectsByStatus(@PathVariable statusId: Long): ResponseEntity<Any> {
+        val projects = service.findActiveProjectsByStatus(statusId)
         return if (projects.isEmpty()) ResponseEntity.noContent().build()
         else ResponseEntity.ok(projects)
     }
@@ -69,9 +70,9 @@ class ProjectController(
     fun createProject(@RequestBody projectRequest: ProjectCreateRequest): ResponseEntity<Project> {
         val newProject = service.saveWithSkills(
             name = projectRequest.name,
-            type = projectRequest.type,
+            typeId = projectRequest.typeId,
             description = projectRequest.description,
-            status = projectRequest.status,
+            statusId = projectRequest.statusId,
             budget = projectRequest.budget,
             startDate = projectRequest.startDate,
             endDate = projectRequest.endDate,

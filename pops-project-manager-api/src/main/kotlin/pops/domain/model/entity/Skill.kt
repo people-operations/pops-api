@@ -5,9 +5,10 @@ import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
-import jakarta.persistence.Enumerated
-import jakarta.persistence.EnumType
-import pops.domain.model.enum.SkillType
+import jakarta.persistence.ManyToOne
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.FetchType
+import pops.domain.model.entity.SkillTypeEntity
 
 @Entity(name = "skill")
 data class Skill(
@@ -21,9 +22,9 @@ data class Skill(
     @Column(length = 500)
     val description: String?,
     
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    val type: SkillType,
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "skill_type_id", nullable = false)
+    val type: SkillTypeEntity,
     
     @Column(nullable = false)
     val active: Boolean = true

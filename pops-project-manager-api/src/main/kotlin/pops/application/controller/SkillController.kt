@@ -6,11 +6,11 @@ import org.springframework.data.web.PageableDefault
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import pops.domain.model.entity.Skill
-import pops.domain.model.enum.SkillType
 import pops.domain.service.SkillService
 import pops.application.dto.SkillCreateRequest
 import pops.application.dto.SkillUpdateRequest
 import pops.application.dto.SkillResponse
+import pops.application.dto.SkillTypeResponse
 
 @RestController
 @RequestMapping("/skills")
@@ -41,9 +41,9 @@ class SkillController(
         else ResponseEntity.ok(skills.content)
     }
 
-    @GetMapping("/type/{type}")
-    fun listSkillsByType(@PathVariable type: SkillType): ResponseEntity<Any> {
-        val skills = service.findActiveSkillsByType(type)
+    @GetMapping("/type/{typeId}")
+    fun listSkillsByType(@PathVariable typeId: Long): ResponseEntity<Any> {
+        val skills = service.findActiveSkillsByType(typeId)
         return if (skills.isEmpty()) ResponseEntity.noContent().build()
         else ResponseEntity.ok(skills)
     }
@@ -55,11 +55,18 @@ class SkillController(
             val skill = service.findById(id)
             logger.info("Skill encontrada: ${skill.name}")
             
+            val typeResponse = SkillTypeResponse(
+                id = skill.type.id,
+                name = skill.type.name,
+                description = skill.type.description,
+                active = skill.type.active
+            )
+            
             val skillResponse = SkillResponse(
                 id = skill.id,
                 name = skill.name,
                 description = skill.description,
-                type = skill.type,
+                type = typeResponse,
                 active = skill.active
             )
             
@@ -72,12 +79,11 @@ class SkillController(
 
     @PostMapping
     fun createSkill(@RequestBody skillRequest: SkillCreateRequest): ResponseEntity<Skill> {
-        val skill = Skill(
+        val newSkill = service.saveWithType(
             name = skillRequest.name,
             description = skillRequest.description,
-            type = skillRequest.type
+            typeId = skillRequest.typeId
         )
-        val newSkill = service.save(skill)
         logger.info("Skill criada com sucesso: ${newSkill.id}")
         return ResponseEntity.status(201).body(newSkill)
     }

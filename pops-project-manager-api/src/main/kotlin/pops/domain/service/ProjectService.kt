@@ -5,6 +5,8 @@ import org.springframework.transaction.annotation.Transactional
 import pops.domain.model.entity.Project
 import pops.domain.repository.ProjectRepository
 import pops.domain.repository.SkillRepository
+import pops.domain.repository.ProjectTypeRepository
+import pops.domain.repository.ProjectStatusRepository
 import pops.infraestructure.utilities.CrudService
 import pops.application.dto.ProjectUpdateRequest
 import java.math.BigDecimal
@@ -13,7 +15,9 @@ import java.time.LocalDate
 @Service
 class ProjectService(
     private val projectRepository: ProjectRepository,
-    private val skillRepository: SkillRepository
+    private val skillRepository: SkillRepository,
+    private val projectTypeRepository: ProjectTypeRepository,
+    private val projectStatusRepository: ProjectStatusRepository
 ) {
     
     private val crudService = CrudService(projectRepository)
@@ -26,8 +30,8 @@ class ProjectService(
     
     fun findInactiveProjects(): List<Project> = projectRepository.findByActiveFalse()
     
-    fun findActiveProjectsByStatus(status: pops.domain.model.enum.ProjectStatus): List<Project> = 
-        projectRepository.findByActiveTrueAndStatus(status)
+    fun findActiveProjectsByStatus(statusId: Long): List<Project> = 
+        projectRepository.findByActiveTrueAndProjectStatusId(statusId)
     
     fun save(project: Project): Project {
         require(project.name.isNotBlank()) { "O nome do projeto não pode ser vazio" }
@@ -93,9 +97,9 @@ class ProjectService(
     @Transactional
     fun saveWithSkills(
         name: String,
-        type: String?,
+        typeId: Long?,
         description: String?,
-        status: pops.domain.model.enum.ProjectStatus,
+        statusId: Long,
         budget: BigDecimal?,
         startDate: LocalDate?,
         endDate: LocalDate?,
@@ -106,6 +110,18 @@ class ProjectService(
         
         if (projectRepository.existsByName(name)) {
             throw IllegalArgumentException("Já existe um projeto com o nome informado")
+        }
+        
+        // Buscar tipo se fornecido
+        val projectType = typeId?.let { 
+            projectTypeRepository.findById(it).orElseThrow { 
+                IllegalArgumentException("Tipo de projeto não encontrado com ID: $it") 
+            }
+        }
+        
+        // Buscar status
+        val projectStatus = projectStatusRepository.findById(statusId).orElseThrow { 
+            IllegalArgumentException("Status de projeto não encontrado com ID: $statusId") 
         }
         
         // Buscar skills pelos IDs fornecidos
@@ -121,9 +137,9 @@ class ProjectService(
         
         val project = Project(
             name = name,
-            type = type,
+            type = projectType,
             description = description,
-            status = status,
+            status = projectStatus,
             budget = budget,
             startDate = startDate,
             endDate = endDate,
@@ -148,6 +164,20 @@ class ProjectService(
             }
         }
         
+        // Buscar tipo se fornecido
+        val projectType = projectUpdate.typeId?.let { 
+            projectTypeRepository.findById(it).orElseThrow { 
+                IllegalArgumentException("Tipo de projeto não encontrado com ID: $it") 
+            }
+        } ?: existingProject.type
+        
+        // Buscar status se fornecido
+        val projectStatus = projectUpdate.statusId?.let { 
+            projectStatusRepository.findById(it).orElseThrow { 
+                IllegalArgumentException("Status de projeto não encontrado com ID: $it") 
+            }
+        } ?: existingProject.status
+        
         // Validar skills se fornecidas
         val skills = if (projectUpdate.skillIds != null) {
             if (projectUpdate.skillIds.isNotEmpty()) {
@@ -166,9 +196,9 @@ class ProjectService(
         // Criar projeto atualizado com apenas os campos fornecidos
         val updatedProject = existingProject.copy(
             name = projectUpdate.name ?: existingProject.name,
-            type = projectUpdate.type ?: existingProject.type,
+            type = projectType,
             description = projectUpdate.description ?: existingProject.description,
-            status = projectUpdate.status ?: existingProject.status,
+            status = projectStatus,
             budget = projectUpdate.budget ?: existingProject.budget,
             startDate = projectUpdate.startDate ?: existingProject.startDate,
             endDate = projectUpdate.endDate ?: existingProject.endDate,

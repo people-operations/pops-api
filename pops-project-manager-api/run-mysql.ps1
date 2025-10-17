@@ -8,3 +8,7 @@ Write-Host "Iniciando aplicação com perfil MySQL..."
 
 
 
+
+
+
+

@@ -5,13 +5,15 @@ import org.springframework.transaction.annotation.Transactional
 import pops.domain.model.entity.Skill
 import pops.domain.repository.SkillRepository
 import pops.domain.repository.ProjectRepository
+import pops.domain.repository.SkillTypeRepository
 import pops.infraestructure.utilities.CrudService
 import pops.application.dto.SkillUpdateRequest
 
 @Service
 class SkillService(
     private val skillRepository: SkillRepository,
-    private val projectRepository: ProjectRepository
+    private val projectRepository: ProjectRepository,
+    private val skillTypeRepository: SkillTypeRepository
 ) {
     
     private val crudService = CrudService(skillRepository)
@@ -24,8 +26,8 @@ class SkillService(
     
     fun findInactiveSkills(): List<Skill> = skillRepository.findByActiveFalse()
     
-    fun findActiveSkillsByType(type: pops.domain.model.enum.SkillType): List<Skill> = 
-        skillRepository.findByActiveTrueAndType(type)
+    fun findActiveSkillsByType(typeId: Long): List<Skill> = 
+        skillRepository.findByActiveTrueAndSkillTypeId(typeId)
     
     fun save(skill: Skill): Skill {
         require(skill.name.isNotBlank()) { "O nome da skill não pode ser vazio" }
@@ -35,6 +37,32 @@ class SkillService(
         }
         
         return crudService.save(skill)
+    }
+    
+    @Transactional
+    fun saveWithType(
+        name: String,
+        description: String?,
+        typeId: Long
+    ): Skill {
+        require(name.isNotBlank()) { "O nome da skill não pode ser vazio" }
+        
+        if (skillRepository.existsByName(name)) {
+            throw IllegalArgumentException("Já existe uma skill com o nome informado")
+        }
+        
+        // Buscar tipo
+        val skillType = skillTypeRepository.findById(typeId).orElseThrow { 
+            IllegalArgumentException("Tipo de skill não encontrado com ID: $typeId") 
+        }
+        
+        val skill = Skill(
+            name = name,
+            description = description,
+            type = skillType
+        )
+        
+        return skillRepository.save(skill)
     }
     
     fun findById(id: Long): Skill = crudService.findById(id)
@@ -71,11 +99,18 @@ class SkillService(
             }
         }
         
+        // Buscar tipo se fornecido
+        val skillType = skillUpdate.typeId?.let { 
+            skillTypeRepository.findById(it).orElseThrow { 
+                IllegalArgumentException("Tipo de skill não encontrado com ID: $it") 
+            }
+        } ?: existingSkill.type
+        
         // Criar skill atualizada com apenas os campos fornecidos
         val updatedSkill = existingSkill.copy(
             name = skillUpdate.name ?: existingSkill.name,
             description = skillUpdate.description ?: existingSkill.description,
-            type = skillUpdate.type ?: existingSkill.type
+            type = skillType
         )
         
         return skillRepository.save(updatedSkill)
