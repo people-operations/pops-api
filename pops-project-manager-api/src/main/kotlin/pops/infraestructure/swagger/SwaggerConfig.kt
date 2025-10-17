@@ -20,7 +20,7 @@ class SwaggerConfig {
                     .contact(
                         Contact()
                             .name("POPS Team")
-                            .email("contato@pops.com")
+                            .email("gyulia.piqueira@sptech.school")
                     )
             )
     }
